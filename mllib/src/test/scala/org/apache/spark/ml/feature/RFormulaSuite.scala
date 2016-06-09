@@ -81,20 +81,31 @@ class RFormulaSuite extends SparkFunSuite with MLlibTestSparkContext with Defaul
 
       // if read from libsvm
       val libsvmFormula = new RFormula().setFormula("label ~ features")
-      val libsvmData = spark.read.format("libsvm")
+      var libsvmData = spark.read.format("libsvm")
         .load("/Users/quickmobile/workspace/spark/data/mllib/sample_libsvm_data.txt")
-      intercept[IllegalArgumentException] {
-        libsvmFormula.fit(libsvmData)
-      }
+//      intercept[IllegalArgumentException] {
+//        libsvmFormula.fit(libsvmData)
+//      }
 
       // if change names, then should be ok
       libsvmFormula.setFeaturesCol("features_input")
       libsvmFormula.setLabelCol("label_input")
 
-      libsvmData.withColumnRenamed("features", "features_input")
-      libsvmData.withColumnRenamed("label", "label_input")
-      val m = libsvmFormula.fit(libsvmData)
+      // only change above 2 will be ok
+      // bacause: only the column name changed,
+      //          the underlying schema fields and resolved terms are still "features" "label"
+      libsvmFormula.fit(libsvmData)
 
+
+      libsvmFormula.setFormula("label_input ~ features_input") // if change the formula, then error
+      libsvmData = libsvmData.withColumnRenamed("features", "features_input")
+      libsvmData = libsvmData.withColumnRenamed("label", "label_input")
+
+      intercept[IllegalArgumentException] {
+        libsvmFormula.fit(libsvmData)
+      }
+
+      // above test will get error: Output column features_input already exists.
     }
 
 
