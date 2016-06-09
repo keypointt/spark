@@ -62,23 +62,35 @@ private[r] object NaiveBayesWrapper extends MLReadable[NaiveBayesWrapper] with L
     logWarning(s"data:" + data.toString)
     logWarning(s"formula:" + formula.toString)
 
+
+    val rFormula = new RFormula()
+    rFormula.setFormula(formula)
+
+
+
     if (data.schema.fieldNames.contains("label")) {
-      logWarning("containing label")
+      logWarning("containing label, so change its name to avoid conflict")
+      data.withColumnRenamed("label", "label_input")
+      rFormula.setLabelCol("label_input")
     }
 
     if (data.schema.fieldNames.contains("features")) {
-      logWarning("containing features")
+      logWarning("containing features, so change its name to avoid conflict")
+      data.withColumnRenamed("features", "features_input")
+      rFormula.setFeaturesCol("features_input")
     }
 
-    val rFormula = new RFormula()
-      .setFormula(formula)
-      .fit(data)
+    logWarning("data field names after change:"  + data.schema.fieldNames.contains("label"))
+    logWarning("data field names after change:"  + data.schema.fieldNames.contains("features"))
+    logWarning(s"rformula, label:feature --- " + rFormula.labelCol + ":" + rFormula.featuresCol)
+
+    val model = rFormula.fit(data)
     // get labels and feature names from output schema
-    val schema = rFormula.transform(data).schema
-    val labelAttr = Attribute.fromStructField(schema(rFormula.getLabelCol))
+    val schema = model.transform(data).schema
+    val labelAttr = Attribute.fromStructField(schema(model.getLabelCol))
       .asInstanceOf[NominalAttribute]
     val labels = labelAttr.values.get
-    val featureAttrs = AttributeGroup.fromStructField(schema(rFormula.getFeaturesCol))
+    val featureAttrs = AttributeGroup.fromStructField(schema(model.getFeaturesCol))
       .attributes.get
     val features = featureAttrs.map(_.name.get)
     // assemble and fit the pipeline
@@ -91,7 +103,7 @@ private[r] object NaiveBayesWrapper extends MLReadable[NaiveBayesWrapper] with L
       .setOutputCol(PREDICTED_LABEL_COL)
       .setLabels(labels)
     val pipeline = new Pipeline()
-      .setStages(Array(rFormula, naiveBayes, idxToStr))
+      .setStages(Array(model, naiveBayes, idxToStr))
       .fit(data)
 
     logWarning(s"labels:" + labels.toString)
