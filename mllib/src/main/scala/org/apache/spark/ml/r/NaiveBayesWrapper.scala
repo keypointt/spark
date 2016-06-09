@@ -22,6 +22,7 @@ import org.json4s._
 import org.json4s.JsonDSL._
 import org.json4s.jackson.JsonMethods._
 
+import org.apache.spark.internal.Logging
 import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.attribute.{Attribute, AttributeGroup, NominalAttribute}
 import org.apache.spark.ml.classification.{NaiveBayes, NaiveBayesModel}
@@ -51,12 +52,24 @@ private[r] class NaiveBayesWrapper private (
   override def write: MLWriter = new NaiveBayesWrapper.NaiveBayesWrapperWriter(this)
 }
 
-private[r] object NaiveBayesWrapper extends MLReadable[NaiveBayesWrapper] {
+private[r] object NaiveBayesWrapper extends MLReadable[NaiveBayesWrapper] with Logging{
 
   val PREDICTED_LABEL_INDEX_COL = "pred_label_idx"
   val PREDICTED_LABEL_COL = "prediction"
 
   def fit(formula: String, data: DataFrame, laplace: Double): NaiveBayesWrapper = {
+
+    logWarning(s"data:" + data.toString)
+    logWarning(s"formula:" + formula.toString)
+
+    if (data.schema.fieldNames.contains("label")) {
+      logWarning("containing label")
+    }
+
+    if (data.schema.fieldNames.contains("label")) {
+      logWarning("containing features")
+    }
+
     val rFormula = new RFormula()
       .setFormula(formula)
       .fit(data)
@@ -80,6 +93,10 @@ private[r] object NaiveBayesWrapper extends MLReadable[NaiveBayesWrapper] {
     val pipeline = new Pipeline()
       .setStages(Array(rFormula, naiveBayes, idxToStr))
       .fit(data)
+
+    logWarning(s"labels:" + labels.toString)
+    logWarning(s"labels:" + labels.toString)
+
     new NaiveBayesWrapper(pipeline, labels, features)
   }
 

@@ -23,6 +23,7 @@ import scala.collection.mutable.ArrayBuffer
 import org.apache.hadoop.fs.Path
 
 import org.apache.spark.annotation.{Experimental, Since}
+import org.apache.spark.internal.Logging
 import org.apache.spark.ml.{Estimator, Model, Pipeline, PipelineModel, PipelineStage, Transformer}
 import org.apache.spark.ml.attribute.AttributeGroup
 import org.apache.spark.ml.linalg.VectorUDT
@@ -71,19 +72,21 @@ private[feature] trait RFormulaBase extends HasFeaturesCol with HasLabelCol {
  */
 @Experimental
 class RFormula(override val uid: String)
-  extends Estimator[RFormulaModel] with RFormulaBase with DefaultParamsWritable {
+  extends Estimator[RFormulaModel] with RFormulaBase with DefaultParamsWritable with Logging {
 
   def this() = this(Identifiable.randomUID("rFormula"))
 
   /**
    * R formula parameter. The formula is provided in string form.
-   * @group param
+    *
+    * @group param
    */
   val formula: Param[String] = new Param(this, "formula", "R model formula")
 
   /**
    * Sets the formula to use for this transformer. Must be called before use.
-   * @group setParam
+    *
+    * @group setParam
    * @param value an R formula in string form (e.g. "y ~ x + z")
    */
   def setFormula(value: String): this.type = set(formula, value)
