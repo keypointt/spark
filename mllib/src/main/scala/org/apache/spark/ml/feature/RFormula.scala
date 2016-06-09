@@ -41,6 +41,10 @@ private[feature] trait RFormulaBase extends HasFeaturesCol with HasLabelCol {
   protected def hasLabelCol(schema: StructType): Boolean = {
     schema.map(_.name).contains($(labelCol))
   }
+
+  protected def hasFeatuesCol(schema: StructType): Boolean = {
+    schema.map(_.name).contains($(featuresCol))
+  }
 }
 
 /**
@@ -169,14 +173,21 @@ class RFormula(override val uid: String)
         .setOutputCol($(labelCol))
     }
 
+    val transformed = transformSchema(dataset.schema)
+
     val pipelineModel = new Pipeline(uid).setStages(encoderStages.toArray).fit(dataset)
     copyValues(new RFormulaModel(uid, resolvedFormula, pipelineModel).setParent(this))
   }
 
   // optimistic schema; does not contain any ML attributes
   override def transformSchema(schema: StructType): StructType = {
-    if (hasLabelCol(schema)) {
+
+    if (hasLabelCol(schema) && hasFeatuesCol(schema)) {
+      StructType(schema.fields)
+    } else if (hasLabelCol(schema)) {
       StructType(schema.fields :+ StructField($(featuresCol), new VectorUDT, true))
+    } else if (hasFeatuesCol(schema)) {
+      StructType(schema.fields :+ StructField($(labelCol), new VectorUDT, true))
     } else {
       StructType(schema.fields :+ StructField($(featuresCol), new VectorUDT, true) :+
         StructField($(labelCol), DoubleType, true))
