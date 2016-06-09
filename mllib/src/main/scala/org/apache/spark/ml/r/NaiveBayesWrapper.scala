@@ -66,7 +66,7 @@ private[r] object NaiveBayesWrapper extends MLReadable[NaiveBayesWrapper] with L
       logWarning("containing label")
     }
 
-    if (data.schema.fieldNames.contains("label")) {
+    if (data.schema.fieldNames.contains("features")) {
       logWarning("containing features")
     }
 
