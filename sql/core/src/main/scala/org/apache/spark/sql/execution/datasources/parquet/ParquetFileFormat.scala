@@ -154,6 +154,7 @@ private[sql] class ParquetFileFormat
     val mergeRespectSummaries = sparkSession.conf.get(SQLConf.PARQUET_SCHEMA_RESPECT_SUMMARIES)
 
     val filesByType = splitFiles(files)
+    println("-------parquet filer format . scala inferSchema")
 
     // Sees which file(s) we need to touch in order to figure out the schema.
     //
@@ -223,6 +224,7 @@ private[sql] class ParquetFileFormat
             .orElse(filesByType.data.headOption)
             .toSeq
       }
+    println("-------parquet filer format . scala inferSchema------all done before return")
     ParquetFileFormat.mergeSchemasInParallel(filesToTouch, sparkSession)
   }
 
@@ -801,6 +803,7 @@ private[sql] object ParquetFileFormat extends Logging {
     val numParallelism = Math.min(Math.max(partialFileStatusInfo.size, 1),
       sparkSession.sparkContext.defaultParallelism)
 
+    println("-------parquet filer format . scala mergeSchemasInParallel -- 1")
     // Issues a Spark job to read Parquet schema in parallel.
     val partiallyMergedSchemas =
       sparkSession
@@ -814,11 +817,13 @@ private[sql] object ParquetFileFormat extends Logging {
 
           // Skips row group information since we only need the schema
           val skipRowGroups = true
+          println("------- 111111111111111")
 
           // Reads footers in multi-threaded manner within each task
           val footers =
             ParquetFileReader.readAllFootersInParallel(
               serializedConf.value, fakeFileStatuses.asJava, skipRowGroups).asScala
+          println("------- 222222222222222")
 
           // Converter used to convert Parquet `MessageType` to Spark SQL `StructType`
           val converter =
@@ -826,6 +831,7 @@ private[sql] object ParquetFileFormat extends Logging {
               assumeBinaryIsString = assumeBinaryIsString,
               assumeInt96IsTimestamp = assumeInt96IsTimestamp,
               writeLegacyParquetFormat = writeLegacyParquetFormat)
+          println("------- 3")
 
           if (footers.isEmpty) {
             Iterator.empty
@@ -840,9 +846,11 @@ private[sql] object ParquetFileFormat extends Logging {
                   s"Failed merging schema of file ${footer.getFile}:\n${schema.treeString}", cause)
               }
             }
+            println("------- 4")
             Iterator.single(mergedSchema)
           }
         }.collect()
+    println("-------parquet filer format . scala mergeSchemasInParallel -- 2")
 
     if (partiallyMergedSchemas.isEmpty) {
       None
