@@ -1338,7 +1338,6 @@ setGeneric("fitted")
 setGeneric("spark.naiveBayes", function(data, formula, ...) { standardGeneric("spark.naiveBayes") })
 
 #' @rdname spark.survreg
-#' @param ... Additional parameters to tune SurvReg.
 #' @export
 setGeneric("spark.survreg", function(data, formula) { standardGeneric("spark.survreg") })
 
