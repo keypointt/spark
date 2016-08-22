@@ -1301,6 +1301,7 @@ setGeneric("window", function(x, ...) { standardGeneric("window") })
 setGeneric("year", function(x) { standardGeneric("year") })
 
 #' @rdname spark.glm
+#' @param ... Additional parameters to tune GLM.
 #' @export
 setGeneric("spark.glm", function(data, formula, ...) { standardGeneric("spark.glm") })
 
@@ -1323,6 +1324,7 @@ setGeneric("predict", function(object, ...) { standardGeneric("predict") })
 setGeneric("rbind", signature = "...")
 
 #' @rdname spark.kmeans
+#' @param ... Additional parameters to tune KMeans.
 #' @export
 setGeneric("spark.kmeans", function(data, formula, ...) { standardGeneric("spark.kmeans") })
 
@@ -1331,10 +1333,12 @@ setGeneric("spark.kmeans", function(data, formula, ...) { standardGeneric("spark
 setGeneric("fitted")
 
 #' @rdname spark.naiveBayes
+#' @param ... Additional parameters to tune NaiveBayes.
 #' @export
 setGeneric("spark.naiveBayes", function(data, formula, ...) { standardGeneric("spark.naiveBayes") })
 
 #' @rdname spark.survreg
+#' @param ... Additional parameters to tune SurvReg.
 #' @export
 setGeneric("spark.survreg", function(data, formula) { standardGeneric("spark.survreg") })
 
@@ -1352,10 +1356,12 @@ setGeneric("spark.posterior", function(object, newData) { standardGeneric("spark
 setGeneric("spark.perplexity", function(object, data) { standardGeneric("spark.perplexity") })
 
 #' @rdname spark.isoreg
+#' @param ... Additional parameters to tune IsoReg.
 #' @export
 setGeneric("spark.isoreg", function(data, formula, ...) { standardGeneric("spark.isoreg") })
 
 #' @rdname spark.gaussianMixture
+#' @param ... Additional parameters to tune GaussianMixture.
 #' @export
 setGeneric("spark.gaussianMixture",
            function(data, formula, ...) {
@@ -1370,5 +1376,6 @@ setGeneric("spark.gaussianMixture",
 setGeneric("write.ml", function(object, path, ...) { standardGeneric("write.ml") })
 
 #' @rdname spark.als
+#' @param ... Additional parameters to tune ALS.
 #' @export
 setGeneric("spark.als", function(data, ...) { standardGeneric("spark.als") })
