@@ -27,7 +27,7 @@ import org.apache.spark.mllib.util.MLUtils
 
 object RandomForestRegressionExample {
   def main(args: Array[String]): Unit = {
-    val conf = new SparkConf().setAppName("RandomForestRegressionExample")
+    val conf = new SparkConf().setAppName("RandomForestRegressionExample").setMaster("local[9]")
     val sc = new SparkContext(conf)
     // $example on$
     // Load and parse the data file.
@@ -56,7 +56,8 @@ object RandomForestRegressionExample {
     }
     val testMSE = labelsAndPredictions.map{ case(v, p) => math.pow((v - p), 2)}.mean()
     println("Test Mean Squared Error = " + testMSE)
-    println("Learned regression forest model:\n" + model.toDebugString)
+//    println("Learned regression forest model:\n" + model.toDebugString)
+    println("model.maxDepth:\n" + model.maxDepth)
 
     // Save and load model
     model.save(sc, "target/tmp/myRandomForestRegressionModel")

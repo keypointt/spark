@@ -377,6 +377,11 @@ private[tree] sealed class TreeEnsembleModel(
   def numTrees: Int = trees.length
 
   /**
+   * Get max depth of trees in ensemble.
+   */
+  def maxDepth: Int = trees.map(_.depth).max
+
+  /**
    * Get total number of nodes, summed over all trees in the ensemble.
    */
   def totalNumNodes: Int = trees.map(_.numNodes).sum

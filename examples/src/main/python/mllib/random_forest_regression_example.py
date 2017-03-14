@@ -49,7 +49,9 @@ if __name__ == "__main__":
         float(testData.count())
     print('Test Mean Squared Error = ' + str(testMSE))
     print('Learned regression forest model:')
-    print(model.toDebugString())
+    # print(model.toDebugString())
+    print("model.maxDepth:")
+    print(model.maxDepth)
 
     # Save and load model
     model.save(sc, "target/tmp/myRandomForestRegressionModel")

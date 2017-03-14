@@ -67,7 +67,8 @@ public class JavaRandomForestRegressionExample {
       return diff * diff;
     }).mean();
     System.out.println("Test Mean Squared Error: " + testMSE);
-    System.out.println("Learned regression forest model:\n" + model.toDebugString());
+//    System.out.println("Learned regression forest model:\n" + model.toDebugString());
+    System.out.println("model.maxDepth:\n" + model.maxDepth());
 
     // Save and load model
     model.save(jsc.sc(), "target/tmp/myRandomForestRegressionModel");

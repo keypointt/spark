@@ -73,6 +73,13 @@ class TreeEnsembleModel(JavaModelWrapper, JavaSaveable):
         """ Full model """
         return self._java_model.toDebugString()
 
+    @since("2.2.0")
+    def maxDepth(self):
+        """
+        Get number of trees in ensemble.
+        """
+        print("hahahahahaha")
+        return self.call("maxDepth")
 
 class DecisionTreeModel(JavaModelWrapper, JavaSaveable, JavaLoader):
     """
